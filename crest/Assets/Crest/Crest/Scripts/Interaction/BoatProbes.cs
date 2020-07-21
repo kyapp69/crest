@@ -116,14 +116,13 @@ namespace Crest
 
             {
                 _sampleFlowHelper.Init(transform.position, _minSpatialLength);
-                Vector2 surfaceFlow = Vector2.zero;
-                _sampleFlowHelper.Sample(ref surfaceFlow);
+                _sampleFlowHelper.Sample(out var surfaceFlow);
                 waterSurfaceVel += new Vector3(surfaceFlow.x, 0, surfaceFlow.y);
             }
 
             // Buoyancy
-            FixedUpdateBuoyancy(collProvider);
-            FixedUpdateDrag(collProvider, waterSurfaceVel);
+            FixedUpdateBuoyancy();
+            FixedUpdateDrag(waterSurfaceVel);
             FixedUpdateEngine();
         }
 
@@ -153,7 +152,7 @@ namespace Crest
             _rb.AddTorque(rotVec * _turnPower * sideways, ForceMode.Acceleration);
         }
 
-        void FixedUpdateBuoyancy(ICollProvider collProvider)
+        void FixedUpdateBuoyancy()
         {
             var archimedesForceMagnitude = WATER_DENSITY * Mathf.Abs(Physics.gravity.y);
 
@@ -168,7 +167,7 @@ namespace Crest
             }
         }
 
-        void FixedUpdateDrag(ICollProvider collProvider, Vector3 waterSurfaceVel)
+        void FixedUpdateDrag(Vector3 waterSurfaceVel)
         {
             // Apply drag relative to water
             var _velocityRelativeToWater = _rb.velocity - waterSurfaceVel;
